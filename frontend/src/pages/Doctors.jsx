@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
-import { AppContext } from '../context/AppContext';
+
+import { AppContext } from '../context/AppContext.jsx';
 
 const Doctors = () => {
 
@@ -38,7 +39,7 @@ const Doctors = () => {
         <div className='w-full grid [grid-template-columns:repeat(auto-fill,minmax(200px,1fr))] gap-4 gap-y-6'>
           {
             filterDoc.map((item , index) => (
-              <div onClick={() => navigate(`/appointment/${item._id}`)} className='border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500' key={index}>
+              <div onClick={() => navigate(`/appointments/${item._id}`)} className='border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500' key={index}>
                   <img className='bg-blue-50' src={item.image} alt="" />
                   <div className='p-4'>
                       <div className='flex items-center gap-2 text-sm text-center text-green-500'>
