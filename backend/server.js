@@ -10,7 +10,6 @@ import adminRouter from './routes/adminRoute.js';
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-
 // middlwares
 app.use(express.json());
 app.use(cors());
