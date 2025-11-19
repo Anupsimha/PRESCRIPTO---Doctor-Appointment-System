@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+primary{
+    color: #5F6FFF;
+}
