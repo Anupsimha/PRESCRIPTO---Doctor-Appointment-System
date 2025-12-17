@@ -17,6 +17,7 @@ app.use(cors());
 // api endpoints
 app.use('/api/admin' , adminRouter)
 
+
 app.listen(PORT, async () => {
   await connectDB();
   await connectCloudinary();

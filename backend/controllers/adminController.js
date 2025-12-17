@@ -4,6 +4,7 @@ import {v2 as cloudinary} from 'cloudinary';
 import jwt from 'jsonwebtoken';
 
 import Doctor from '../models/doctorModel.js';
+import doctorModel from '../models/doctorModel.js';
 
 // API for adding doctor
 const addDoctor = async (req, res) => {
@@ -113,4 +114,15 @@ const loginAdmin = async (req , res) => {
     }
 }
 
-export {addDoctor , loginAdmin};
+const allDoctors = async (req , res) => {
+    try{
+      const doctors = await doctorModel.find({}).select("-password");
+      res.json({success : true , doctors});
+    }
+    catch(error){
+      console.error("Error in fetching doctors" , error);
+      res.status(500).json({success : false , message : "Internal server error"});
+    }
+}
+
+export {addDoctor , loginAdmin , allDoctors};

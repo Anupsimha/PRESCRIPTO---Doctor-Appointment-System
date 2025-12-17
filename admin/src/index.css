@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Outfit:wght@100..900&display=swap');
 @import "tailwindcss";
 
 primary{
@@ -6,4 +7,8 @@ primary{
 
 ::-webkit-scrollbar{
     @apply hidden;
+}
+
+*{
+    font-family: Outfit;
 }
