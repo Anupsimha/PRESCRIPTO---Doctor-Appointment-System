@@ -25,6 +25,7 @@ const Appointment = () => {
 
     //getting current data
     let today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     for(let i = 0 ; i < 7 ; i++){
       //getting date with index
@@ -32,8 +33,7 @@ const Appointment = () => {
       currentDate.setDate(today.getDate() + i);
 
       // settings and time of the date with index
-      let endTime = new Date();
-      endTime.setDate(today.getDate() + i);
+      let endTime = new Date(currentDate);
       endTime.setHours(21, 0, 0, 0);
 
       //setting hours
