@@ -3,8 +3,9 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import {v2 as cloudinary} from 'cloudinary';
 
-import UserModel from '../models/userModel.js';
 import userModel from '../models/userModel.js';
+import doctorModel from '../models/doctorModel.js';
+import appointmentModel from '../models/appointmentModel.js';
 
 // Register User
 const registerUser = async (req, res) => {
@@ -31,7 +32,7 @@ const registerUser = async (req, res) => {
             name , email , password: hashedPassword
         }
 
-        const newUser = new UserModel(userData)
+        const newUser = new userModel(userData)
         const user = await newUser.save();
 
         const token = jwt.sign({id : user._id} , process.env.JWT_SECRET , { expiresIn: '7d' })
@@ -80,8 +81,8 @@ const loginUser = async (req, res) => {
 const getProfile = async (req, res) => {
     try {
         
-        const { userId } = req.user;
-        const userData = await UserModel.findById(userId).select('-password');
+        const userId = req.userId;
+        const userData = await userModel.findById(userId).select('-password');
 
         res.json({ success: true, userData });
 
@@ -96,7 +97,7 @@ const getProfile = async (req, res) => {
 const updateProfile = async (req , res) => {
     try {
         
-        const { userId } = req.user;
+        const userId = req.userId;
         const { name , phone , address , dob , gender } = req.body;
         const imageFile = req.file;
 
@@ -125,4 +126,61 @@ const updateProfile = async (req , res) => {
 }
 
 
-export {registerUser , loginUser , getProfile , updateProfile};
+// API to book appointment
+const bookAppointment = async (req , res) => {
+    try {
+        
+        const { docId, slotDate, slotTime } = req.body;
+        const userId = req.userId;
+        const docData =  await doctorModel.findById(docId).select('-password')
+        
+        if(docData.available === false) {
+            return res.json({success : false , message : 'Doctor is not available'})
+        }
+
+        let slots_booked = docData.slots_booked
+
+        // Check if slot is already booked
+        if(slots_booked[slotDate]){
+            if(slots_booked[slotDate].includes(slotTime)){
+                return res.json({success : false , message : 'Doctor Slot is not available'})
+            }
+            else{
+                slots_booked[slotDate].push(slotTime)
+            }
+        }
+        else{
+            slots_booked[slotDate] = []
+            slots_booked[slotDate].push(slotTime)
+        }
+
+        const userData = await userModel.findById(userId).select('-password')
+
+        delete docData.slots_booked
+
+        const appointmentData = {
+            userId , 
+            docId , 
+            userData , 
+            docData , 
+            slotDate , 
+            slotTime , 
+            amount : docData.fees , 
+            date : Date.now(),
+        }
+
+        const newAppointment = new appointmentModel(appointmentData)
+        await newAppointment.save();
+
+        await doctorModel.findByIdAndUpdate(docId , {slots_booked})
+
+        res.json({ success: true, message: "Appointment booked successfully" });
+
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+
+export {registerUser , loginUser , getProfile , updateProfile , bookAppointment};
